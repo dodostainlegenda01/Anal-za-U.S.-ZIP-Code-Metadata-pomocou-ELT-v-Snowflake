@@ -1,4 +1,5 @@
 # Analýza U.S. ZIP Code Metadata pomocou ELT v Snowflake
+---
 ## 1️⃣ Úvod a popis zdrojových dát
 V tomto projekte analyzujeme **geografické a demografické údaje o ZIP kódoch v Spojených štátoch amerických.** Cieľom analýzy je porozumieť:
 - rozloženiu populácie v jednotlivých štátoch a regiónoch,
@@ -10,7 +11,6 @@ Dataset obsahuje jednu hlavnú tabuľku:
 **ZIP_CODE_METADATA** – obsahuje informácie o ZIP kódoch, mestách, štátoch, geografickej polohe (latitude, longitude), časových pásmach a demografických ukazovateľoch (celková populácia, medián veku, populácia mužov a žien).
 Účelom ELT procesu bolo tieto dáta očistiť, transformovať a reorganizovať do dimenzionálneho modelu typu Star Schema, vhodného pre analytické dotazy a vizualizácie.
 
----
 ## 1️⃣.1 Dátová architektúra – pôvodná schéma
 Zdrojový dataset má jednoduchú relačnú štruktúru pozostávajúcu z jednej tabuľky. Entitno-relačný diagram (ERD) pôvodnej schémy je znázornený na obrázku nižšie
 **ERD Schema – zdrojové dáta**
