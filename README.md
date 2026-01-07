@@ -3,13 +3,13 @@
 
 V tomto projekte analyzujeme geografické a demografické údaje o ZIP kódoch v Spojených štátoch amerických. Cieľom analýzy je porozumieť:
 
-rozloženiu populácie v jednotlivých štátoch a regiónoch,
+- rozloženiu populácie v jednotlivých štátoch a regiónoch,
 
-demografickým charakteristikám obyvateľstva (vek, pohlavie),
+- demografickým charakteristikám obyvateľstva (vek, pohlavie),
 
-významu mediálnych oblastí (DMA),
+- významu mediálnych oblastí (DMA),
 
-geografickému rozloženiu ZIP kódov.
+- geografickému rozloženiu ZIP kódov.
 
 Zdrojové dáta pochádzajú zo Snowflake Marketplace, konkrétne z datasetu U.S. ZIP Code Metadata, ktorý poskytuje agregované demografické a geografické informácie na úrovni ZIP kódov.
 
@@ -25,7 +25,7 @@ Zdrojový dataset má jednoduchú relačnú štruktúru pozostávajúcu z jednej
 
 ERD Schema – zdrojové dáta
 
-Obrázok 1: Pôvodná dátová štruktúra ZIP_CODE_METADATA
+![Dashboard ZIP USA](img/project_dashboard.png)
 
 ## 2️⃣ Dimenzionálny model
 
