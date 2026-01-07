@@ -29,12 +29,26 @@ Hlavné metriky:
 - celková populácia štátu,
 - populácia predchádzajúceho ZIP kódu (LAG).
 
+#### Primárny kľúč (Primary Key)
+Primárnym kľúčom faktovej tabuľky je: `FACT_ZIP_USA_SNAPSHOT_ID`
+
+Tento kľúč je generovaný pomocou analytickej funkcie `ROW_NUMBER()`, čím je zabezpečená jeho jednoznačnosť pre každý riadok faktovej tabuľky. Keďže ide o snapshot fakt (stav dát v čase načítania), tento prístup je vhodný a zároveň jednoduchý na implementáciu.
+
+#### Cudzie kľúče (Foreign Keys)
+Faktová tabuľka je prepojená s dimenziami prostredníctvom cudzích kľúčov:
+- `ZIP_USA_ID` → `DIM_ZIP_USA` – základné informácie o ZIP kóde, meste a štáte
+- `GEO_USA_ID` → `DIM_GEO_USA` – geografický kontext (poloha, časové pásmo)
+- `DMA_USA_ID` → `DIM_DMA_USA` – mediálne oblasti (DMA)
+- `DEMOGRAPHICS_USA_ID` → `DIM_DEMOGRAPHICS_USA` – demografické údaje populácie
+- `LOAD_DATE_ID` → `DIM_LOAD_DATE` – dátum načítania dát (snapshot v čase)
+
 **Dimenzie**
-- DIM_ZIP_USA – informácie o ZIP kódoch, mestách a štátoch (SCD Typ 0),
-- DIM_GEO_USA – geografické údaje (latitude, longitude, časové pásmo, daylight savings) (SCD Typ 0),
-- DIM_DMA_USA – mediálne oblasti DMA (SCD Typ 0),
-- DIM_DEMOGRAPHICS_USA – demografické údaje o populácii (SCD Typ 0),
-- DIM_LOAD_DATE – dátum načítania dát (SCD Typ 0).
+- `DIM_ZIP_USA` – informácie o ZIP kódoch, mestách a štátoch (SCD Typ 0),
+- `DIM_GEO_USA` – geografické údaje (latitude, longitude, časové pásmo, daylight savings) (SCD Typ 0),
+- `DIM_DMA_USA` – mediálne oblasti DMA (SCD Typ 0),
+- `DIM_DEMOGRAPHICS_USA` – demografické údaje o populácii (SCD Typ 0),
+- `DIM_LOAD_DATE` – dátum načítania dát (SCD Typ 0).
+
 Štruktúra hviezdicového modelu je znázornená na diagrame nižšie.
 **Star Schema**
 ![Star SCHEMA](img/star_schema.png)
