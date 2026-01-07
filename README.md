@@ -1,7 +1,7 @@
 # Analýza U.S. ZIP Code Metadata pomocou ELT v Snowflake
 ## 1️⃣ Úvod a popis zdrojových dát
 
-V tomto projekte analyzujeme geografické a demografické údaje o ZIP kódoch v Spojených štátoch amerických. Cieľom analýzy je porozumieť:
+V tomto projekte analyzujeme **geografické a demografické údaje o ZIP kódoch v Spojených štátoch amerických.** Cieľom analýzy je porozumieť:
 
 - rozloženiu populácie v jednotlivých štátoch a regiónoch,
 
@@ -15,7 +15,7 @@ Zdrojové dáta pochádzajú zo Snowflake Marketplace, konkrétne z datasetu U.S
 
 Dataset obsahuje jednu hlavnú tabuľku:
 
-ZIP_CODE_METADATA – obsahuje informácie o ZIP kódoch, mestách, štátoch, geografickej polohe (latitude, longitude), časových pásmach a demografických ukazovateľoch (celková populácia, medián veku, populácia mužov a žien).
+**ZIP_CODE_METADATA** – obsahuje informácie o ZIP kódoch, mestách, štátoch, geografickej polohe (latitude, longitude), časových pásmach a demografických ukazovateľoch (celková populácia, medián veku, populácia mužov a žien).
 
 Účelom ELT procesu bolo tieto dáta očistiť, transformovať a reorganizovať do dimenzionálneho modelu typu Star Schema, vhodného pre analytické dotazy a vizualizácie.
 
@@ -23,45 +23,45 @@ ZIP_CODE_METADATA – obsahuje informácie o ZIP kódoch, mestách, štátoch, g
 
 Zdrojový dataset má jednoduchú relačnú štruktúru pozostávajúcu z jednej tabuľky. Entitno-relačný diagram (ERD) pôvodnej schémy je znázornený na obrázku nižšie.
 
-ERD Schema – zdrojové dáta
+**ERD Schema – zdrojové dáta**
 
-![ERD SCHEMA](erd_schema.png)
+![ERD SCHEMA](img/erd_schema.png)
 
 ## 2️⃣ Dimenzionálny model
 
 Na základe zdrojových dát bol navrhnutý dimenzionálny model typu Star Schema podľa Kimballovej metodológie. Model pozostáva z 1 faktovej tabuľky a 5 dimenzií.
 
-Faktová tabuľka
+**Faktová tabuľka**
 
-FACT_ZIP_USA_SNAPSHOT
+- FACT_ZIP_USA_SNAPSHOT
 Obsahuje agregované metriky o ZIP kódoch a prepojenia na všetky dimenzie.
 Hlavné metriky:
 
-počet ZIP kódov,
+- počet ZIP kódov,
 
-poradie ZIP kódu podľa populácie v rámci štátu (window function),
+- poradie ZIP kódu podľa populácie v rámci štátu (window function),
 
-celková populácia štátu,
+- celková populácia štátu,
 
-populácia predchádzajúceho ZIP kódu (LAG).
+- populácia predchádzajúceho ZIP kódu (LAG).
 
-Dimenzie
+**Dimenzie**
 
-DIM_ZIP_USA – informácie o ZIP kódoch, mestách a štátoch (SCD Typ 0),
+- DIM_ZIP_USA – informácie o ZIP kódoch, mestách a štátoch (SCD Typ 0),
 
-DIM_GEO_USA – geografické údaje (latitude, longitude, časové pásmo, daylight savings) (SCD Typ 0),
+- DIM_GEO_USA – geografické údaje (latitude, longitude, časové pásmo, daylight savings) (SCD Typ 0),
 
-DIM_DMA_USA – mediálne oblasti DMA (SCD Typ 0),
+- DIM_DMA_USA – mediálne oblasti DMA (SCD Typ 0),
 
-DIM_DEMOGRAPHICS_USA – demografické údaje o populácii (SCD Typ 0),
+- DIM_DEMOGRAPHICS_USA – demografické údaje o populácii (SCD Typ 0),
 
-DIM_LOAD_DATE – dátum načítania dát (SCD Typ 0).
+- DIM_LOAD_DATE – dátum načítania dát (SCD Typ 0).
 
 Štruktúra hviezdicového modelu je znázornená na diagrame nižšie.
 
-Star Schema
+**Star Schema**
 
-Obrázok 2: Dimenzionálny model pre U.S. ZIP Code Metadata
+![Star SCHEMA](img/)
 
 ## 3️⃣ ELT proces v Snowflake
 
