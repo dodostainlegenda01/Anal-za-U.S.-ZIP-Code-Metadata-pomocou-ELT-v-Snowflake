@@ -341,7 +341,7 @@ JOIN ROOSTER_PROJECT_DB.DW.DIM_ZIP_USA z
 GROUP BY z.STATE
 ORDER BY ZIP_COUNT DESC;
 ```
-![Počet ZIP kódov podľa štátu](img/.png)
+![Počet ZIP kódov podľa štátu](img/Pocet_ZIP.png)
 
 #### Graf 2: Top 20 ZIP kódov podľa celkovej populácie
 Druhý graf zobrazuje **20 ZIP kódov s najvyšším počtom obyvateľov**. Vizualizácia umožňuje identifikovať najľudnatejšie oblasti v rámci USA a porovnať ich veľkosť populácie.
@@ -364,6 +364,7 @@ JOIN ROOSTER_PROJECT_DB.DW.DIM_DEMOGRAPHICS_USA d
 ORDER BY d.TOTAL_POPULATION DESC NULLS LAST
 LIMIT 20;
 ```
+![Top 20 ZIP kódov podľa celkovej populácie](img/Top_20_ZIP.png)
 
 #### Graf 3: Top 20 DMA oblastí podľa celkovej populácie
 Táto vizualizácia agreguje populáciu na úroveň **DMA (Designated Market Area)**, čo predstavuje mediálne regióny používané najmä v reklame a marketingu.
@@ -385,6 +386,7 @@ GROUP BY dma.DMA_NAME
 ORDER BY TOTAL_POPULATION DESC NULLS LAST
 LIMIT 20;
 ```
+![Top 20 DMA oblastí podľa celkovej populácie](img/Top_20_DMA.png)
 
 #### Graf 4: Geografická mapa ZIP kódov podľa štátu (Latitude / Longitude)
 Štvrtá vizualizácia je **mapová reprezentácia ZIP kódov** založená na zemepisnej šírke a dĺžke z dimenzie `DIM_GEO_USA`. Každý bod na mape reprezentuje jeden ZIP kód a je priradený ku konkrétnemu štátu.
@@ -405,6 +407,7 @@ GROUP BY dma.DMA_NAME
 ORDER BY POPULATION DESC
 LIMIT 15;
 ```
+![Geografická mapa ZIP kódov podľa štátu (Latitude / Longitude)](img/Map.png)
 
 #### Graf 5: Rozdelenie ZIP kódov podľa mediánu veku (Histogram)
 Posledný graf je histogram, ktorý zobrazuje rozdelenie **ZIP kódov podľa mediánu veku obyvateľstva**. Medián veku je zaokrúhlený do intervalov (bucketov), čím vznikajú vekové skupiny.
@@ -423,6 +426,7 @@ WHERE d.MEDIAN_AGE IS NOT NULL
 GROUP BY AGE_BUCKET
 ORDER BY AGE_BUCKET;
 ```
+![Rozdelenie ZIP kódov podľa mediánu veku (Histogram)](img/Histogram.png)
 
 ### Zhrnutie vizualizácií
 Navrhnuté vizualizácie poskytujú **komplexný pohľad na demografické a geografické charakteristiky USA** na rôznych úrovniach detailu – od jednotlivých ZIP kódov až po mediálne regióny (DMA).
