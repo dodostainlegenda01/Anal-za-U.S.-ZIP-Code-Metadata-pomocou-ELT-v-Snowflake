@@ -341,6 +341,7 @@ JOIN ROOSTER_PROJECT_DB.DW.DIM_ZIP_USA z
 GROUP BY z.STATE
 ORDER BY ZIP_COUNT DESC;
 ```
+![Počet ZIP kódov podľa štátu](img/.png)
 
 #### Graf 2: Top 20 ZIP kódov podľa celkovej populácie
 Druhý graf zobrazuje **20 ZIP kódov s najvyšším počtom obyvateľov**. Vizualizácia umožňuje identifikovať najľudnatejšie oblasti v rámci USA a porovnať ich veľkosť populácie.
