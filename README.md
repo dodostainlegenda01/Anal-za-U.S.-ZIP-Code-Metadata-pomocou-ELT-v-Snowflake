@@ -10,10 +10,13 @@ Dataset obsahuje jednu hlavnú tabuľku:
 **ZIP_CODE_METADATA** – obsahuje informácie o ZIP kódoch, mestách, štátoch, geografickej polohe (latitude, longitude), časových pásmach a demografických ukazovateľoch (celková populácia, medián veku, populácia mužov a žien).
 Účelom ELT procesu bolo tieto dáta očistiť, transformovať a reorganizovať do dimenzionálneho modelu typu Star Schema, vhodného pre analytické dotazy a vizualizácie.
 
+---
 ## 1️⃣.1 Dátová architektúra – pôvodná schéma
 Zdrojový dataset má jednoduchú relačnú štruktúru pozostávajúcu z jednej tabuľky. Entitno-relačný diagram (ERD) pôvodnej schémy je znázornený na obrázku nižšie
 **ERD Schema – zdrojové dáta**
 ![ERD SCHEMA](img/erd_schema.png)
+
+---
 ## 2️⃣ Dimenzionálny model
 Na základe zdrojových dát bol navrhnutý dimenzionálny model typu Star Schema podľa Kimballovej metodológie. Model pozostáva z 1 faktovej tabuľky a 5 dimenzií.
 
@@ -35,6 +38,8 @@ Hlavné metriky:
 Štruktúra hviezdicového modelu je znázornená na diagrame nižšie.
 **Star Schema**
 ![Star SCHEMA](img/star_schema.png)
+
+---
 ## 3️⃣ ELT proces v Snowflake
 ELT proces bol implementovaný v prostredí **Snowflake** s cieľom transformovať zdrojové dáta zo Snowflake Marketplace do dimenzionálneho modelu typu Star Schema, vhodného na analytické dotazy a vizualizácie. Proces pozostáva z troch hlavných fáz: **Extract, Load a Transform.**
 
@@ -319,5 +324,107 @@ Výsledná tabuľka `FACT_ZIP_USA_SNAPSHOT` umožňuje:
 - analýzu mediánu veku a pohlavného rozdelenia naprieč USA,
 - rýchle agregácie cez `ZIP_COUNT`.
 
+---
 ### 4️⃣ Vizualizácia dát
-Vizualizácia dát slúži ako posledná vrstva analytického procesu, ktorej cieľom je **prehľadne prezentovať výsledky viacdimenzionálneho modelu** vytvoreného v Snowflake. Všetky grafy vychádzajú z faktovej tabuľky FACT_ZIP_USA_SNAPSHOT, ktorá je prepojená s dimenziami pomocou surrogate kľúčov, čo zabezpečuje konzistentné a výkonné analytické dotazy.
+Vizualizácia dát slúži ako posledná vrstva analytického procesu, ktorej cieľom je **prehľadne prezentovať výsledky viacdimenzionálneho modelu** vytvoreného v Snowflake. Všetky grafy vychádzajú z faktovej tabuľky `FACT_ZIP_USA_SNAPSHOT`, ktorá je prepojená s dimenziami pomocou surrogate kľúčov, čo zabezpečuje konzistentné a výkonné analytické dotazy.
+![DASHBOARD](img/project_dashboard.png)
+
+#### Graf 1: Počet ZIP kódov podľa štátu
+Táto vizualizácia zobrazuje **počet ZIP kódov v jednotlivých štátoch USA**. Cieľom grafu je porovnať administratívne členenie štátov a identifikovať, ktoré štáty majú najväčší počet ZIP oblastí.
+Graf využíva dimenziu `DIM_ZIP_USA` a agregáciu nad faktovou tabuľkou. Výsledky ukazujú výrazné rozdiely medzi jednotlivými štátmi, čo môže súvisieť s rozlohou štátu, hustotou obyvateľstva alebo urbanizáciou.
+Táto vizualizácia poskytuje základný kontext pre ďalšie analýzy populácie a demografie.
+```sql
+SELECT z.STATE, COUNT(*) AS ZIP_COUNT
+FROM ROOSTER_PROJECT_DB.DW.FACT_ZIP_USA_SNAPSHOT f
+JOIN ROOSTER_PROJECT_DB.DW.DIM_ZIP_USA z
+  ON f.ZIP_USA_ID = z.ZIP_USA_ID
+GROUP BY z.STATE
+ORDER BY ZIP_COUNT DESC;
+```
+
+#### Graf 2: Top 20 ZIP kódov podľa celkovej populácie
+Druhý graf zobrazuje **20 ZIP kódov s najvyšším počtom obyvateľov**. Vizualizácia umožňuje identifikovať najľudnatejšie oblasti v rámci USA a porovnať ich veľkosť populácie.
+Použitá metrika `TOTAL_POPULATION` pochádza z dimenzie `DIM_DEMOGRAPHICS_USA`, pričom poradie ZIP kódov je určené pomocou analytickej funkcie `RANK()` vypočítanej vo faktovej tabuľke.
+Graf je vhodný najmä na:
+- identifikáciu demograficky významných oblastí,
+- plánovanie marketingových alebo logistických aktivít,
+- regionálne porovnávanie hustoty obyvateľstva.
+```sql
+SELECT
+  z.ZIP,
+  z.CITY,
+  z.STATE,
+  d.TOTAL_POPULATION
+FROM ROOSTER_PROJECT_DB.DW.FACT_ZIP_USA_SNAPSHOT f
+JOIN ROOSTER_PROJECT_DB.DW.DIM_ZIP_USA z
+  ON f.ZIP_USA_ID = z.ZIP_USA_ID
+JOIN ROOSTER_PROJECT_DB.DW.DIM_DEMOGRAPHICS_USA d
+  ON f.DEMOGRAPHICS_USA_ID = d.DEMOGRAPHICS_USA_ID
+ORDER BY d.TOTAL_POPULATION DESC NULLS LAST
+LIMIT 20;
+```
+
+#### Graf 3: Top 20 DMA oblastí podľa celkovej populácie
+Táto vizualizácia agreguje populáciu na úroveň **DMA (Designated Market Area)**, čo predstavuje mediálne regióny používané najmä v reklame a marketingu.
+Graf sumarizuje hodnoty `TOTAL_POPULATION` pre jednotlivé DMA oblasti a zobrazuje 20 najväčších regiónov. Vďaka tomu je možné:
+- porovnať veľkosť mediálnych trhov,
+- identifikovať oblasti s najväčším dosahom,
+- analyzovať regionálne rozdiely na vyššej úrovni agregácie než ZIP kód.
+Vizualizácia demonštruje silu dimenzionálneho modelu, ktorý umožňuje jednoduché agregácie naprieč rôznymi dimenziami bez potreby zložitých **JOIN** operácií.
+```sql
+SELECT
+  dma.DMA_NAME,
+  SUM(d.TOTAL_POPULATION) AS TOTAL_POPULATION
+FROM ROOSTER_PROJECT_DB.DW.FACT_ZIP_USA_SNAPSHOT f
+JOIN ROOSTER_PROJECT_DB.DW.DIM_DMA_USA dma
+  ON f.DMA_USA_ID = dma.DMA_USA_ID
+JOIN ROOSTER_PROJECT_DB.DW.DIM_DEMOGRAPHICS_USA d
+  ON f.DEMOGRAPHICS_USA_ID = d.DEMOGRAPHICS_USA_ID
+GROUP BY dma.DMA_NAME
+ORDER BY TOTAL_POPULATION DESC NULLS LAST
+LIMIT 20;
+```
+
+#### Graf 4: Geografická mapa ZIP kódov podľa štátu (Latitude / Longitude)
+Štvrtá vizualizácia je **mapová reprezentácia ZIP kódov** založená na zemepisnej šírke a dĺžke z dimenzie `DIM_GEO_USA`. Každý bod na mape reprezentuje jeden ZIP kód a je priradený ku konkrétnemu štátu.
+Cieľom mapy je:
+- vizuálne znázorniť geografické rozloženie ZIP kódov,
+- overiť konzistenciu geografických dát,
+- poskytnúť priestorový kontext pre demografické analýzy.
+```sql
+SELECT
+  dma.DMA_NAME AS DMA,
+  SUM(d.TOTAL_POPULATION) AS POPULATION
+FROM ROOSTER_PROJECT_DB.DW.FACT_ZIP_USA_SNAPSHOT f
+JOIN ROOSTER_PROJECT_DB.DW.DIM_DMA_USA dma
+  ON f.DMA_USA_ID = dma.DMA_USA_ID
+JOIN ROOSTER_PROJECT_DB.DW.DIM_DEMOGRAPHICS_USA d
+  ON f.DEMOGRAPHICS_USA_ID = d.DEMOGRAPHICS_USA_ID
+GROUP BY dma.DMA_NAME
+ORDER BY POPULATION DESC
+LIMIT 15;
+```
+
+#### Graf 5: Rozdelenie ZIP kódov podľa mediánu veku (Histogram)
+Posledný graf je histogram, ktorý zobrazuje rozdelenie **ZIP kódov podľa mediánu veku obyvateľstva**. Medián veku je zaokrúhlený do intervalov (bucketov), čím vznikajú vekové skupiny.
+Vizualizácia umožňuje:
+- analyzovať vekovú štruktúru populácie,
+- identifikovať oblasti s mladšou alebo staršou populáciou,
+- porovnať demografické trendy medzi regiónmi.
+```sql
+SELECT
+  FLOOR(d.MEDIAN_AGE) AS AGE_BUCKET,
+  COUNT(*) AS ZIP_COUNT
+FROM ROOSTER_PROJECT_DB.DW.FACT_ZIP_USA_SNAPSHOT f
+JOIN ROOSTER_PROJECT_DB.DW.DIM_DEMOGRAPHICS_USA d
+  ON f.DEMOGRAPHICS_USA_ID = d.DEMOGRAPHICS_USA_ID
+WHERE d.MEDIAN_AGE IS NOT NULL
+GROUP BY AGE_BUCKET
+ORDER BY AGE_BUCKET;
+```
+
+### Zhrnutie vizualizácií
+Navrhnuté vizualizácie poskytujú **komplexný pohľad na demografické a geografické charakteristiky USA** na rôznych úrovniach detailu – od jednotlivých ZIP kódov až po mediálne regióny (DMA).
+
+---
+Autor: Šimon Šedivý
