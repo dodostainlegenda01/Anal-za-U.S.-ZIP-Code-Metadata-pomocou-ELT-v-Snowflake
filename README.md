@@ -25,7 +25,7 @@ Zdrojový dataset má jednoduchú relačnú štruktúru pozostávajúcu z jednej
 
 ERD Schema – zdrojové dáta
 
-![Dashboard ZIP USA](img/project_dashboard.png)
+![ERD SCHEMA](erd_schema.png)
 
 ## 2️⃣ Dimenzionálny model
 
